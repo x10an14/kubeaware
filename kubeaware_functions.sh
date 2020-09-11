@@ -56,7 +56,7 @@ sync_kubeaware() {
     CURR_HASH=$(shasum "${KUBECONFIG_CONTENT}" | cut -d" " -f1)
   fi
 
-  if [[ ${CURR_HASH} != ${LAST_HASH} ]]; then
+  if [[ "${CURR_HASH}" != "${LAST_HASH}" ]]; then
     get_current_namespace
     get_current_context
     export LAST_HASH=${CURR_HASH}
