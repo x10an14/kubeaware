@@ -47,9 +47,14 @@ sync_kubeaware() {
 
   # check for changes in all kubeconfig files
   local IFS="$(':' read -ra CONFIG <<< "$KUBECONFIG_FILES")"
-  KUBECONFIG_CONTENT="$(for element in "${CONFIG[@]}"; do cat "$element"; done)"
-  
-  local CURR_HASH=$(echo ${KUBECONFIG_CONTENT} | shasum | cut -d" " -f1)
+  local CURR_HASH=""
+  if [[ ${#CONFIG[@]} -eq 0 ]]; then
+    # If there's only one file, or IFS/CONFIG line fails
+    CURR_HASH="$(shasum  "$KUBECONFIG_FILES" | awk '{print $1}')"
+  else
+    KUBECONFIG_CONTENT="$(for element in "${CONFIG[@]}"; do cat "$element"; done)"
+    CURR_HASH=$(shasum "${KUBECONFIG_CONTENT}" | cut -d" " -f1)
+  fi
 
   if [[ ${CURR_HASH} != ${LAST_HASH} ]]; then
     get_current_namespace
